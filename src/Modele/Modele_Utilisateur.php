@@ -201,4 +201,12 @@ SET motDePasse = :parammotDePasse ');
         return $reponse;
     }
 
+    public function getRgpdAccepte() {
+        return $this->rgpdAccepte;
+    }
+
+    public function setRgpdAccepte($rgpdAccepte) {
+        $this->rgpdAccepte = $rgpdAccepte;
+    }
+
 }
