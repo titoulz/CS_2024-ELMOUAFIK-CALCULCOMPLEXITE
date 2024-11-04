@@ -9,7 +9,6 @@ class Modele_Utilisateur
     /**
      * @param $connexionPDO : connexion à la base de données
      * @return mixed : le tableau des étudiants ou null (something went wrong...)
-     *
      */
     static function Utilisateur_Select()
     {
@@ -89,13 +88,13 @@ class Modele_Utilisateur
             return false;
         }
         $requetePreparee = $connexionPDO->prepare(
-            'INSERT INTO `utilisateur` (`idUtilisateur`, `login`, `idCategorie_utilisateur`, `motDePasse`) 
+            'INSERT INTO `utilisateur` (`idUtilisateur`, `login`, `idCategorie_utilisateur`, `motDePasse`)
          VALUES (NULL, :paramlogin, :paramidCategorie_utilisateur, "");');
 
         $requetePreparee->bindParam('paramlogin', $login);
         $requetePreparee->bindParam('paramidCategorie_utilisateur', $codeCategorie);
         $reponse = $requetePreparee->execute(); //$reponse boolean sur l'état de la requête
-        if($reponse != false) {
+        if ($reponse != false) {
             $idUtilisateur = $connexionPDO->lastInsertId();
             $desactiver = 0;
             self::Utilisateur_Modifier_Desactivation($idUtilisateur, $desactiver);
@@ -128,39 +127,34 @@ class Modele_Utilisateur
      * @return mixed
      */
     static function Utilisateur_Modifier($idUtilisateur, $login, $idCodeCategorie)
-
     {
         $connexionPDO = Singleton_ConnexionPDO::getInstance();
-
         $requetePreparee = $connexionPDO->prepare(
-'UPDATE `utilisateur`
-SET `login`= :paramlogin, `idCategorie_utilisateur`= :paramidCategorie_utilisateur
-WHERE idUtilisateur = :paramidUtilisateur');
+            'UPDATE `utilisateur`
+            SET `login`= :paramlogin, `idCategorie_utilisateur`= :paramidCategorie_utilisateur
+            WHERE idUtilisateur = :paramidUtilisateur'
+        );
         $requetePreparee->bindParam('paramlogin', $login);
         $requetePreparee->bindParam('paramidCategorie_utilisateur', $idCodeCategorie);
         $requetePreparee->bindParam('paramidUtilisateur', $idUtilisateur);
-        $reponse = $requetePreparee->execute(); //$reponse boolean sur l'état de la requête
-
-
+        $reponse = $requetePreparee->execute();
         return $reponse;
     }
 
-// fonction pour activer ou désactiver un utilisateur
+    // fonction pour activer ou désactiver un utilisateur
     static function Utilisateur_Modifier_Desactivation($idUtilisateur, $desactiver)
-
     {
         $connexionPDO = Singleton_ConnexionPDO::getInstance();
-
         $requetePreparee = $connexionPDO->prepare(
-            'UPDATE `utilisateur` 
-SET `desactiver`= :paramdesactiver
-WHERE idUtilisateur = :paramidUtilisateur');
+            'UPDATE `utilisateur`
+            SET `desactiver`= :paramdesactiver
+            WHERE idUtilisateur = :paramidUtilisateur'
+        );
         $requetePreparee->bindParam('paramdesactiver', $desactiver);
         $requetePreparee->bindParam('paramidUtilisateur', $idUtilisateur);
         $reponse = $requetePreparee->execute(); //$reponse boolean sur l'état de la requête
         return $reponse;
     }
-
 
     /**
      * @param $connexionPDO
@@ -169,13 +163,13 @@ WHERE idUtilisateur = :paramidUtilisateur');
      * @return mixed
      */
     static function Utilisateur_Modifier_motDePasse($idUtilisateur, $motDePasse)
-
     {
         $connexionPDO = Singleton_ConnexionPDO::getInstance();
-         $requetePreparee = $connexionPDO->prepare(
-            'UPDATE `utilisateur` 
-SET motDePasse = :parammotDePasse
-WHERE idUtilisateur = :paramidUtilisateur');
+        $requetePreparee = $connexionPDO->prepare(
+            'UPDATE `utilisateur`
+            SET motDePasse = :parammotDePasse
+            WHERE idUtilisateur = :paramidUtilisateur'
+        );
         $requetePreparee->bindParam('parammotDePasse', $motDePasse);
         $requetePreparee->bindParam('paramidUtilisateur', $idUtilisateur);
         $reponse = $requetePreparee->execute(); //$reponse boolean sur l'état de la requête
@@ -189,24 +183,77 @@ WHERE idUtilisateur = :paramidUtilisateur');
      * @return mixed
      */
     static function Utilisateur_Modifier_ALL($motDePasse)
-
     {
         $connexionPDO = Singleton_ConnexionPDO::getInstance();
-
         $requetePreparee = $connexionPDO->prepare(
-            'UPDATE `utilisateur` 
-SET motDePasse = :parammotDePasse ');
+            'UPDATE `utilisateur`
+            SET motDePasse = :parammotDePasse'
+        );
         $requetePreparee->bindParam('parammotDePasse', $motDePasse);
         $reponse = $requetePreparee->execute(); //$reponse boolean sur l'état de la requête
         return $reponse;
     }
 
-    public function getRgpdAccepte() {
+    public function getRgpdAccepte()
+    {
         return $this->rgpdAccepte;
     }
 
-    public function setRgpdAccepte($rgpdAccepte) {
+    public function setRgpdAccepte($rgpdAccepte)
+    {
         $this->rgpdAccepte = $rgpdAccepte;
     }
 
+    private $aAccepteRGPD;
+    private $dateAcceptionRGPD;
+    private $IP;
+
+    public function getAAccepteRGPD()
+    {
+        return $this->aAccepteRGPD;
+    }
+
+    public function setAAccepteRGPD($aAccepteRGPD)
+    {
+        $this->aAccepteRGPD = $aAccepteRGPD;
+    }
+
+    public function getDateAcceptionRGPD()
+    {
+        return $this->dateAcceptionRGPD;
+    }
+
+    public function setDateAcceptionRGPD($dateAcceptionRGPD)
+    {
+        $this->dateAcceptionRGPD = $dateAcceptionRGPD;
+    }
+
+    public function getIP()
+    {
+        return $this->IP;
+    }
+
+    public function setIP($IP)
+    {
+        $this->IP = $IP;
+    }
+
+    // New method for updating RGPD consent
+    static function Utilisateur_Modifier_RGPD($utilisateur)
+    {
+        $connexionPDO = Singleton_ConnexionPDO::getInstance();
+        $requetePreparee = $connexionPDO->prepare(
+            'UPDATE `utilisateur`
+            SET `aAccepteRGPD` = :paramAAccepteRGPD,
+                `dateAcceptionRGPD` = :paramDateAcceptionRGPD,
+                `IP` = :paramIP
+            WHERE idUtilisateur = :paramidUtilisateur'
+        );
+        $requetePreparee->bindParam('paramAAccepteRGPD', $utilisateur->getAAccepteRGPD());
+        $requetePreparee->bindParam('paramDateAcceptionRGPD', $utilisateur->getDateAcceptionRGPD());
+        $requetePreparee->bindParam('paramIP', $utilisateur->getIP());
+        $requetePreparee->bindParam('paramidUtilisateur', $utilisateur->getIdUtilisateur());
+        $reponse = $requetePreparee->execute();
+        return $reponse;
+    }
 }
